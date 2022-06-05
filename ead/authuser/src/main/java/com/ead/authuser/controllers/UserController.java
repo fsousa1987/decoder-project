@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -54,7 +55,8 @@ public class UserController {
     @PutMapping("/{userId}")
     public ResponseEntity<Object> updateUser(@PathVariable(value = "userId") UUID userId,
                                              @JsonView(UserDto.UserView.UserPut.class)
-                                             @RequestBody UserDto userDto) {
+                                             @RequestBody
+                                             @Validated(UserDto.UserView.UserPut.class) UserDto userDto) {
 
         Optional<UserModel> userModelOptional = userService.findById(userId);
 
@@ -77,7 +79,8 @@ public class UserController {
     @PutMapping("/{userId}/password")
     public ResponseEntity<Object> updatePassword(@PathVariable(value = "userId") UUID userId,
                                                  @JsonView(UserDto.UserView.PasswordPut.class)
-                                                 @RequestBody UserDto userDto) {
+                                                 @RequestBody
+                                                 @Validated(UserDto.UserView.PasswordPut.class) UserDto userDto) {
 
         Optional<UserModel> userModelOptional = userService.findById(userId);
 
@@ -101,7 +104,8 @@ public class UserController {
     @PutMapping("/{userId}/image")
     public ResponseEntity<Object> updateImage(@PathVariable(value = "userId") UUID userId,
                                               @JsonView(UserDto.UserView.ImagePut.class)
-                                              @RequestBody UserDto userDto) {
+                                              @RequestBody
+                                              @Validated(UserDto.UserView.ImagePut.class) UserDto userDto) {
 
         Optional<UserModel> userModelOptional = userService.findById(userId);
 
