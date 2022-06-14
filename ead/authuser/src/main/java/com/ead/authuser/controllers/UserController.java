@@ -34,12 +34,17 @@ public class UserController {
     UserService userService;
 
     @GetMapping
-    public ResponseEntity<Page<UserModel>> getAllUsers(SpecificationTemplate.UserSpec spec,
-                                                       @PageableDefault(page = 0, size = 10, sort = "userId",
-                                                               direction = Sort.Direction.ASC) Pageable pageable) {
+    public ResponseEntity<Page<UserModel>> getAllUsers(
+            SpecificationTemplate.UserSpec spec,
+            @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam(required = false) UUID courseId) {
 
-        Page<UserModel> userModelPage = userService.findAll(spec, pageable);
-
+        Page<UserModel> userModelPage = null;
+        if (courseId != null) {
+            userModelPage = userService.findAll(SpecificationTemplate.userCourseId(courseId).and(spec), pageable);
+        } else {
+            userModelPage = userService.findAll(spec, pageable);
+        }
         if (!userModelPage.isEmpty()) {
             for (UserModel user : userModelPage.toList()) {
                 user.add(linkTo(methodOn(UserController.class).getOneUser(user.getUserId())).withSelfRel());
@@ -76,10 +81,11 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<Object> updateUser(@PathVariable(value = "userId") UUID userId,
-                                             @JsonView(UserDto.UserView.UserPut.class)
-                                             @RequestBody
-                                             @Validated(UserDto.UserView.UserPut.class) UserDto userDto) {
+    public ResponseEntity<Object> updateUser(
+            @PathVariable(value = "userId") UUID userId,
+            @JsonView(UserDto.UserView.UserPut.class)
+            @RequestBody
+            @Validated(UserDto.UserView.UserPut.class) UserDto userDto) {
 
         log.debug("PUT updateUser userDto received {} ", userDto.toString());
         Optional<UserModel> userModelOptional = userService.findById(userId);
@@ -96,17 +102,18 @@ public class UserController {
 
             userService.save(userModel);
 
-            log.debug("PUT updateUser userModel saved {} ", userModel.toString());
+            log.debug("PUT updateUser userModel userId {} ", userModel.getUserId());
             log.info("User updated successfully userId {}", userModel.getUserId());
             return ResponseEntity.status(HttpStatus.OK).body(userModel);
         }
     }
 
     @PutMapping("/{userId}/password")
-    public ResponseEntity<Object> updatePassword(@PathVariable(value = "userId") UUID userId,
-                                                 @JsonView(UserDto.UserView.PasswordPut.class)
-                                                 @RequestBody
-                                                 @Validated(UserDto.UserView.PasswordPut.class) UserDto userDto) {
+    public ResponseEntity<Object> updatePassword(
+            @PathVariable(value = "userId") UUID userId,
+            @JsonView(UserDto.UserView.PasswordPut.class)
+            @RequestBody
+            @Validated(UserDto.UserView.PasswordPut.class) UserDto userDto) {
 
         log.debug("PUT updatePassword userDto received {} ", userDto.toString());
         Optional<UserModel> userModelOptional = userService.findById(userId);
@@ -125,17 +132,18 @@ public class UserController {
 
             userService.save(userModel);
 
-            log.debug("PUT updatePassword userModel saved {} ", userModel.toString());
+            log.debug("PUT updatePassword userModel userId {} ", userModel.getUserId());
             log.info("Password updated successfully userId {} ", userModel.getUserId());
             return ResponseEntity.status(HttpStatus.OK).body("Password updated successfully");
         }
     }
 
     @PutMapping("/{userId}/image")
-    public ResponseEntity<Object> updateImage(@PathVariable(value = "userId") UUID userId,
-                                              @JsonView(UserDto.UserView.ImagePut.class)
-                                              @RequestBody
-                                              @Validated(UserDto.UserView.ImagePut.class) UserDto userDto) {
+    public ResponseEntity<Object> updateImage(
+            @PathVariable(value = "userId") UUID userId,
+            @JsonView(UserDto.UserView.ImagePut.class)
+            @RequestBody
+            @Validated(UserDto.UserView.ImagePut.class) UserDto userDto) {
 
         log.debug("PUT updateImage userDto received {} ", userDto.toString());
         Optional<UserModel> userModelOptional = userService.findById(userId);
@@ -150,7 +158,7 @@ public class UserController {
 
             userService.save(userModel);
 
-            log.debug("PUT updateImage userModel saved {} ", userModel.toString());
+            log.debug("PUT updateImage userModel userId {} ", userModel.getUserId());
             log.info("Image updated successfully userId {} ", userModel.getUserId());
             return ResponseEntity.status(HttpStatus.OK).body(userModel);
         }
