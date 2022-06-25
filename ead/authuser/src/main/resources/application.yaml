@@ -23,7 +23,7 @@ spring:
     ansi:
       enabled: ALWAYS
   rabbitmq:
-    addresses: amqps://ytncyeml:u-j8hv4VP23ZF8K7S7-eay6_7hjGkoFY@moose.rmq.cloudamqp.com/ytncyeml
+    addresses: ${RABBIT_ADDRESS}
 
 logging:
   level:
@@ -36,6 +36,9 @@ ead:
   api:
     url:
       course: 'http://ead-course-service/ead-course'
+  broker:
+    exchange:
+      userEvent: ead.userevent
 
 eureka:
   client:
